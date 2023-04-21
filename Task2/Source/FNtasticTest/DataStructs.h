@@ -17,6 +17,9 @@ struct FUISpawnData
 	TSubclassOf<ABaseCharacter> CharacterToSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Spawn")
+	UCurveFloat* CurveFloat;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Spawn")
 	FTransform SpawnTransform;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")

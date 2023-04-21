@@ -6,6 +6,8 @@
 #include "NiagaraSystem.h"
 #include <Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 
+#include "Components/AudioComponent.h"
+
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -15,16 +17,10 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	TimelineProgress.BindUFunction(this, FName("Move"));
+	StartLocation = GetActorLocation();
 
-	if(CurveFloat)
-	{
-		FOnTimelineFloat TimelineProgress;
-		TimelineProgress.BindUFunction(this, FName("Move"));
-
-		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
-		StartLocation = GetActorLocation();
-		
-	}
 }
 void ABaseCharacter::Tick(float DeltaTime)
 {
@@ -39,15 +35,23 @@ void ABaseCharacter::Move(float Value)
 	FVector NewLocation = FMath::Lerp(StartLocation, EndLocation, Value);
 	SetActorLocation(NewLocation);
 
-	UGameplayStatics::PlaySound2D(GetWorld(), MovementSound, 1.0f, 1.0f, 0.0f);
+	CurrentAudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), MovementSound,GetActorLocation(), FRotator::ZeroRotator,1.0f, 1.0f, 0.0f);
 	SpawnFX(MoveFX);
+	
+		
 }
 
 void ABaseCharacter::StartTimeline()
 {
+	if(!CurveFloat)
+		return;
+	
+	Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+	
 	Timeline.Play();
 	
-	UGameplayStatics::PlaySound2D(GetWorld(), SpawnSound, 1.0f, 1.0f, 0.0f);
+	CurrentAudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), SpawnSound, GetActorLocation(),FRotator::ZeroRotator ,1.0f, 1.0f, 0.0f);
+
 	SpawnFX(SpawnedFX);
 }
 
@@ -55,17 +59,19 @@ void ABaseCharacter::Destroy()
 {
 	GetWorld()->DestroyActor(this);
 
-	UGameplayStatics::PlaySound2D(GetWorld(), FinishedtSound, 1.0f, 1.0f, 0.0f);
+	CurrentAudioComponent->Stop();
+	CurrentAudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FinishedtSound,GetActorLocation(), FRotator::ZeroRotator ,1.0f, 1.0f, 0.0f);
+
 	SpawnFX(FinishFX);
 }
 
 UNiagaraComponent* ABaseCharacter::SpawnFX(UNiagaraSystem* NiagaraSystem)
 {
-
+	
 	return UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraSystem,
 		this->GetRootComponent(),
 		SocketName,
-		FVector::ZeroVector,
+		FVector::ForwardVector,
 		FRotator::ZeroRotator,
 		EAttachLocation::SnapToTarget,
 		true);

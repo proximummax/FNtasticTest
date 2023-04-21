@@ -27,8 +27,7 @@ void UButtonsWidget::NativeOnInitialized()
 void UButtonsWidget::SpawnCharacter(UButtonWidget* Button)
 {
 	GameInstance = GetWorld()->GetGameInstance<UCustomGameInstance>();
-
-	auto j = Button->GetName();
+	
 	for (auto SpawnData : GameInstance->SpawnDatas)
 	{
 		if (!SpawnData.SpawnButtonName.Equals(Button->GetName()))
@@ -38,6 +37,7 @@ void UButtonsWidget::SpawnCharacter(UButtonWidget* Button)
 		if (Character)
 		{
 			Character->SetEndLocation(SpawnData.TargetPoint);
+			Character->SetCurveFloat(SpawnData.CurveFloat);
 			Character->StartTimeline();
 		}
 	}

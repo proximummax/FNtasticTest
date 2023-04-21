@@ -26,10 +26,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category= "Movement Timeline")
 	UCurveFloat* CurveFloat;
-	UPROPERTY(EditAnywhere, Category = "Movement Timeline")
-	AActor* EndPointActor;
 
 	void SetEndLocation(FVector EndPoint) { EndLocation = EndPoint; }
+	void SetCurveFloat(UCurveFloat* NewCurveFloat) { CurveFloat = NewCurveFloat; }
 	
 	void StartTimeline();
 protected:
@@ -41,6 +40,9 @@ protected:
 	UPROPERTY()
 	FVector EndLocation;
 private:
+
+	FOnTimelineFloat TimelineProgress;
+	
 	UPROPERTY()
 	FVector StartLocation;
 
@@ -53,6 +55,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	USoundBase* FinishedtSound;
 
+	UAudioComponent* CurrentAudioComponent;
+	
 	UPROPERTY(EditAnywhere, Category = "VFX")
 	UNiagaraSystem* SpawnedFX;
 	UPROPERTY(EditAnywhere, Category = "VFX")
