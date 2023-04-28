@@ -1,2 +1,2 @@
 # FNtasticTest
-Тестовое задание в компанию FNtastic
+Тестовое задание для FNtastic
